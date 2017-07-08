@@ -1,0 +1,17 @@
+<div class="todos">
+
+  <div  class="form-inline">
+    <form (submit)="add($event)" >
+
+      <input [(ngModel)]="newParameter" (keyup.enter)="newParameter=''" class="form-control" name="newParameter">
+      <button type="submit" class="form-control btn-success"   [disabled]="newParameter===''">Add Parameter
+      </button>
+    </form>
+  </div>
+  <ul class="list-unstyled">
+    <li *ngFor="let param of parameterList; let i=index">
+        <span class="col-sm-2">{{ param }}</span>
+        <span (click)="delete(i)" class="delete-icon"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,19 @@
+<div class="todos">
+  <div  class="form-inline">
+    <form (submit)="add($event)" >
+      {{hparam}}
+      <input [(ngModel)]="newParameter.Param"  class="form-control" name="newParameter">
+      {{hval}}
+      <input [(ngModel)]="newParameter.PathToParameter" (keyup.enter)="newParameter.PathToParameter=''" class="form-control" name="newPath">
+      <button type="submit" class="form-control btn-success"   [disabled]="newParameter.Param==='' || newParameter.PathToParameter===''">Add Parameter
+      </button>
+    </form>
+  </div>
+  <ul class="list-unstyled">
+    <li *ngFor="let params of outparameterList.oparam; let i=index">
+      <span class="col-sm-4">{{param}}: {{ params.Param }}</span>
+      <span class="col-sm-4">{{val}}: {{ params.PathToParameter }}</span>
+      <span (click)="delete(i)" class="delete-icon"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+    </li>
+  </ul>
+</div>

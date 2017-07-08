@@ -1,0 +1,535 @@
+<style>
+  .labelsize {
+    width: 100px;
+  }
+
+  .disablediv {
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  .inner {
+    display: table;
+    margin: 0 auto;
+  }
+
+
+</style>
+<div class="container" *ngIf="showForm">
+  <div class="form-group"><h3>3CX CRM Server Side Integration Form</h3>
+    Please,
+    answer the following questions:
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <form>
+        <div class="container">
+          <div class="row">
+            <div class="timeline-centered">
+              <article class="timeline-entry">
+                <div  class="timeline-entry-inner ">
+                  <div class="timeline-icon bg-secondary">
+                    <i class="entypo-feather">1</i>
+                  </div>
+                  <div class="timeline-label"  [ngClass]="{'disablediv': disableSection1 }">
+                    <h1><span>CRM General Info</span></h1>
+                    <div class="form-group">
+                      <label for="fullname">
+                        Full Name <span style="color: red">*</span>
+                      </label>
+                      <input name="fullaname" (change)="onChange($event)" [(ngModel)]="form.FullName" type="text"
+                             class="form-control" id="fullname" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                      <label for="comp">
+                        Company <span style="color: red">*</span>
+                      </label>
+                      <input name="company" (change)="onChange($event)" [(ngModel)]="form.Company" type="text"
+                             class="form-control" id="comp" required placeholder="Enter your company name">
+                    </div>
+                    <div class="form-group">
+                      <label for="email">
+                        Email <span style="color: red">*</span>
+                      </label>
+                      <input name="email" (change)="onChange($event)" [(ngModel)]="form.Email" type="email"
+                             class="form-control" id="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                      <label for="crmn">
+                        CRM Name <span style="color: red">*</span>
+                      </label>
+                      <input name="crmname" (change)="onChange($event)" [(ngModel)]="form.CRMName" type="text"
+                             class="form-control" id="crmn" required placeholder="Write the name of the CRM">
+                    </div>
+                    <div class="form-group">
+                      <label for="website">
+                        Website <span style="color: red">*</span>
+                      </label>
+                      <input name="website" (change)="onChange($event)" [(ngModel)]="form.WebSite" type="text"
+                             class="form-control" id="website" required placeholder="Website of the CRM">
+                    </div>
+                    <div class="form-group">
+                      <label for="crms">
+                        CRM Support Contact Name <span style="color: red">*</span>
+                      </label>
+                      <input name="contactcrmname" (change)="onChange($event)" [(ngModel)]="form.CRMContactName"
+                             type="text" class="form-control" id="crms" required placeholder="CRM Support Contact Name">
+                    </div>
+                    <div class="form-group">
+                      <label for="crme">
+                        CRM Support Contact Email</label> <span style="color: red">*</span>
+                      <input name="contactcrmemail" (change)="onChange($event)" [(ngModel)]="form.CRMContactEmail"
+                             type="email" class="form-control" id="crme" required placeholder="CRM Support Contact Email">
+                    </div>
+                    <div class="form-group">
+                      <label>
+                        Approximate User Base <span style="color: red">*</span>
+                      </label>
+                      <select [(ngModel)]="form.UserBase" [ngModelOptions]="{standalone: true}"  class="form-control">
+                        <option value="" disabled >Select your option</option>
+                        <option *ngFor="let n of userBase;let i = index" [attr.selected]="i == 0 ? true : null"  [attr.value]="n">{{n}}</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="market">
+                        Main Market <span style="color: red">*</span>
+                      </label>
+                      <input (change)="onChange($event)" name="market" [(ngModel)]="form.MainMarket" type="text"
+                             class="form-control" id="market" required placeholder="Enter the Main Market name">
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <div *ngIf="showSection2">
+                <article class="timeline-entry">
+
+                  <div class="timeline-entry-inner">
+
+                    <div class="timeline-icon bg-secondary">
+                      <i class="entypo-feather">2</i>
+                    </div>
+                    <div class="timeline-label">
+                      <h1><span>API Info</span></h1>
+                      <div class="form-group">
+                        <label>What type of web service does your CRM support?</label>
+                        <div class="radio">
+                          <label><input type="radio" name="api" (change)="onChange($event)" [(ngModel)]="form.ApiType"
+                                        value="rest">REST</label>
+                        </div>
+                        <div class="radio">
+                          <label><input type="radio" name="api" (change)="onChange($event)" [(ngModel)]="form.ApiType"
+                                        value="soap">SOAP</label>
+                        </div>
+
+
+                        <div *ngIf="terminate">
+
+                          We are supporting modern REST API's. SOAP is not supported.
+
+                        </div>
+
+                        <div *ngIf="form.ApiType === 'rest'">
+                          <label>Authentication Type (Basic or OAuth)</label>
+                          <div class="radio">
+                            <label><input type="radio" name="auth" (change)="onChangeAuth($event)"
+                                          [(ngModel)]="form.AuthType" value="Basic">Basic</label>
+                          </div>
+                          <div class="radio">
+                            <label><input type="radio" name="auth" (change)="onChangeAuth($event)"
+                                          [(ngModel)]="form.AuthType" value="OAuth2">OAuth2</label>
+                          </div>
+                        </div>
+
+                        <div *ngIf="!terminate">
+                          <div *ngIf="form.AuthType === 'OAuth2'">
+                            <div class="form-group">
+                              <label>Input Parameters</label>
+                              <app-parameters (outParam)="addParams($event)"
+                                              [parameters]="form.Parameters.param"></app-parameters>
+                            </div>
+
+                            <div class="form-group">
+
+
+                              <label for="authurl" class="labelsize">
+                                Auth URL <span style="color: red">*</span></label>
+                              <span class="form-inline">
+                            <dropdown-request></dropdown-request>
+                            <input style="width: 80%" name="authurl" value="https://" (change)="onChangeSec2($event)"
+                                   [(ngModel)]="form.AuthUrl" type="url" class="form-control" id="authurl" required>
+                            </span>
+                            </div>
+
+                            <div class="form-group">
+                              <label for="tokenurl" class="labelsize">
+                                Token URL <span style="color: red">*</span></label>
+                              <span class="form-inline">
+                <dropdown-request></dropdown-request>
+              <input style="width: 80%" name="tokenurl" (change)="onChangeSec2($event)" [(ngModel)]="form.TokenUrl"
+                     type="url" class="form-control" id="tokenurl" required>
+              </span>
+
+                            </div>
+
+                            <div class="form-group">
+                              <label for="callbackurl" class="labelsize">
+                                CallBack URL<span style="color: red">*</span></label>
+                              <span class="form-inline">
+                <dropdown-request></dropdown-request>
+              <input style="width: 80%" name="callbackurl" (change)="onChangeSec2($event)" [(ngModel)]="form.CallBackUrl"
+                     type="url" class="form-control" id="callbackurl" required>
+              </span>
+                            </div>
+                          </div>
+                          <div *ngIf="form.AuthType === 'Basic'">
+                            <div class="form-group">
+                              <label>Input Parameters</label>
+                              <app-parameters (outParam)="addParams($event)"
+                                              [parameters]="form.Parameters.param"></app-parameters>
+                            </div>
+                            <div class="form-group">
+                              <label>Authorization:Basic </label> (ex. [Username]:[Password])
+                              <input (change)="onChangeSec2($event)" name="authstr" [(ngModel)]="form.BasicAuthString"
+                                     type="text"
+                                     class="form-control" id="authstr" required>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+              <div *ngIf="showSection3">
+                <article class="timeline-entry">
+
+                <div class="timeline-entry-inner">
+
+                  <div class="timeline-icon bg-secondary">
+                    <i class="entypo-feather">3</i>
+                  </div>
+                  <div class="timeline-label">
+                    <h1><span>API Query Info</span></h1>
+                    <div class="form-group">
+
+                      <label>Do you want to query contacts?</label>
+                      <input (change)="onChange($event)" name="qcontacts" [(ngModel)]="form.QuerryContacts"
+                             type="checkbox"
+                             id="qcontacts" required>
+
+
+                      <div *ngIf="form.QuerryContacts">
+                        <div class="form-group">
+                          <label>Specify contacts query</label>
+
+                          <div class="input-group">
+                            <span class="input-group-addon">https://[Domain]/</span>
+                            <input style="width: 80%" name="contactsurl" (change)="onChange($event)"
+                                   [(ngModel)]="form.ContactsUrl"
+                                   type="url" class="form-control" id="contactsurl" required>
+                          </div>
+
+                        </div>
+
+                        <label>Specify output parameters of the contact query</label>
+                        <app-outputparameters [hparam]="'Output Parameter'"
+                                              [hval]="'Path from response'"
+                                              [param]="'Parameter'"
+                                              [val]="'Path'"
+                                              (outParam)="addOutParamContacts($event)"
+                        >
+
+                        </app-outputparameters>
+                        <label for="pcontacts">Contact pop up url</label>
+                        <input (change)="onChange($event)" name="ppcontacts" [(ngModel)]="form.ContactPopUp"
+                               type="checkbox"
+                               id="ppcontacts" required>
+                        <div *ngIf="form.ContactPopUp">
+                        <div class="input-group">
+                          <span class="input-group-addon">https://[Domain]/</span>
+                          <input (change)="onChange($event)" class="form-control" name="pcontacts"
+                                 [(ngModel)]="form.ContactPopUpUrl"
+                                 type="url"
+                                 id="pcontacts" required>
+                        </div>
+                        (ex. https://[Domain]/contcats/show/[Id])
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                      <label>Do you want to query companies?</label>
+                      <input (change)="onChange($event)" name="qcompanies" [(ngModel)]="form.QuerryCompanies"
+                             type="checkbox"
+                             id="qcompanies" required>
+
+                      <div *ngIf="form.QuerryCompanies">
+                        <div class="form-group">
+                          <label>Specify companies query</label>
+
+                          <div class="input-group">
+                            <span class="input-group-addon">https://[Domain]/</span>
+                            <input style="width: 80%" name="companiesurl" (change)="onChange($event)"
+                                   [(ngModel)]="form.CompaniesUrl"
+                                   type="url" class="form-control" id="companiesurl" required>
+                          </div>
+
+
+                        </div>
+
+                        <label>Specify output parameters of the companies query</label>
+                        <app-outputparameters [hparam]="'Output Parameter'"
+                                              [hval]="'Path from response'"
+                                              [param]="'Parameter'"
+                                              [val]="'Path'"
+                                              (outParam)="addOutParamCompanies($event)">
+
+                        </app-outputparameters>
+                        <label for="pcompanies">Companies pop up url</label>
+
+                        <input (change)="onChange($event)" name="ppcompanies" [(ngModel)]="form.CompaniesPopUp"
+                               type="checkbox"
+                               id="ppcompanies" required>
+                        <div *ngIf="form.CompaniesPopUp">
+                        <div class="input-group">
+                          <span class="input-group-addon">https://[Domain]/</span>
+                          <input (change)="onChange($event)" class="form-control" name="pcompanies"
+                                 [(ngModel)]="form.CompaniesPopUpUrl"
+                                 type="url"
+                                 id="pcompanies" required>
+                        </div>
+                        (ex. https://[Domain]/companies/show/[Id])
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+
+                      <label>Do you want to query leads?</label>
+                      <input (change)="onChange($event)" name="qleads" [(ngModel)]="form.QuerryLeads"
+                             type="checkbox"
+                             id="qleads" required>
+
+
+                      <div *ngIf="form.QuerryLeads">
+                        <div class="form-group">
+                          <label>Specify leads query</label>
+                          <div class="input-group">
+                            <span class="input-group-addon">https://[Domain]/</span>
+                            <input style="width: 80%" name="leadsurl" (change)="onChange($event)"
+                                   [(ngModel)]="form.LeadsUrl"
+                                   type="url" class="form-control" id="leadsurl" required>
+                          </div>
+                        </div>
+                        <label>Specify output parameters of the leads query</label>
+                        <app-outputparameters [hparam]="'Output Parameter'"
+                                              [hval]="'Path from response'"
+                                              [param]="'Parameter'"
+                                              [val]="'Path'"
+                                              (outParam)="addOutParamLeads($event)">
+                        </app-outputparameters>
+
+                        <label for="pleads">Laeds pop up url</label>
+                        <input (change)="onChange($event)" name="ppleads" [(ngModel)]="form.LeadsPopUp"
+                               type="checkbox"
+                               id="ppleads" required>
+                        <div *ngIf="form.LeadsPopUp">
+                        <div class="input-group">
+                          <span class="input-group-addon">https://[Domain]/</span>
+                          <input (change)="onChange($event)" class="form-control" name="pleads"
+                                 [(ngModel)]="form.LeadsPopUpUrl"
+                                 type="url"
+                                 id="pleads" required>
+
+                        </div>
+                        (ex. https://[Domain]/leads/show/[Id])
+                        </div>
+
+
+                      </div>
+
+                    </div>
+
+
+                  </div>
+                </div>
+
+              </article>
+              </div>
+              <div *ngIf="showSection4">
+               <article class="timeline-entry">
+
+                <div class="timeline-entry-inner">
+
+                  <div class="timeline-icon bg-secondary">
+                    <i class="entypo-feather">4</i>
+                  </div>
+                  <div class="timeline-label">
+
+                    <h1><span>API Write Info</span></h1>
+                    <div class="form-group">
+                      <label for="cnew">Do you want to create new contact if the number not found in the crm ?</label>
+                      <input (change)="onChange($event)" name="cnew" [(ngModel)]="form.CreateContact"
+                             type="checkbox"
+                             id="cnew" required>
+
+                      <div *ngIf="form.CreateContact">
+
+                        <div class="form-group">
+                          <label>Input parameters</label>
+
+                          <app-outputparameters [hparam]="'Input Parameter'"
+                                                [hval]="'Value'"
+                                                [param]="'Parameter'"
+                                                [val]="'Value'"
+                                                (outParam)="addOutParamCreateContact($event)">
+                          </app-outputparameters>
+
+                        </div>
+
+                        <div class="form-group">
+                            <span class="form-inline">
+                                              <label>URL</label>
+                                              <dropdown-request></dropdown-request>
+                           <div class="input-group">
+                              <span class="input-group-addon">https://[Domain]/</span>
+                             <input style="width: 80%" name="newurl" value="https://"
+                                    (change)="onChange($event)"
+                                    [(ngModel)]="form.NewContactUrl" type="url" class="form-control"
+                                    id="newurl" required>
+
+                            </div>
+                          </span>
+
+
+                        </div>
+                        <div class="form-group">
+                          <label for="npcontacts">New contact pop up url</label>
+                          <div class="input-group">
+                            <span class="input-group-addon">https://[Domain]/</span>
+                            <input (change)="onChange($event)" class="form-control" name="npcontacts"
+                                   [(ngModel)]="form.NewContactPopUpUrl"
+                                   type="url"
+                                   id="npcontacts" required>
+
+                          </div>
+
+                        </div>
+
+                        (ex. https://[Domain]/contacts/new/[Id])
+                      </div>
+
+                    </div>
+
+                    <div class="form-group">
+                      <label for="jnew">Do you want to create a Journal Entry (call activity)?</label>
+                      <input (change)="onChange($event)" name="jnew" [(ngModel)]="form.CreateJournal"
+                             type="checkbox"
+                             id="jnew" required>
+
+                      <div *ngIf="form.CreateJournal">
+
+                        <div class="form-group">
+                          <label>Input parameters</label>
+
+                          <app-outputparameters [hparam]="'Input Parameter'"
+                                                [hval]="'Value'"
+                                                [param]="'Parameter'"
+                                                [val]="'Value'"
+                                                (outParam)="addOutParamCreateJournal($event)">
+                          </app-outputparameters>
+
+                        </div>
+
+                        <div class="form-inline">
+
+                          <label>URL</label>
+                          <dropdown-request></dropdown-request>
+                          <div class="input-group">
+
+
+                            <span class="input-group-addon">https://[Domain]/</span>
+                            <input style="width:100%;" name="newjurl"
+                                   value="https://" (change)="onChange($event)"
+                                   [(ngModel)]="form.NewJournalUrl" type="url"
+                                   style="width: 100%"
+                                   class="form-control" id="newjurl" required>
+                          </div>
+
+                        </div>
+                        <label for="npcontacts">New journal pop up url</label>
+                        <div class="input-group">
+                          <span class="input-group-addon">https://[Domain]/</span>
+                          <input (change)="onChange($event)" class="form-control" name="jnpcontacts"
+                                 [(ngModel)]="form.NewJournalPopUpUrl"
+                                 type="url"
+                                 id="jnpcontacts" required>
+                        </div>
+
+
+                        (ex. https://[Domain]/callhistory/new/[Id])
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+              </article>
+              </div>
+              <div *ngIf="showSection5">
+              <article class="timeline-entry">
+
+                <div class="timeline-entry-inner">
+
+                  <div class="timeline-icon bg-secondary">
+                    <i class="entypo-feather">5</i>
+                  </div>
+                  <div class="timeline-label">
+                    <h1><span>Custom App</span></h1>
+                    <div class="form-group">
+
+                    </div>
+                  </div>
+                </div>
+              </article>
+              </div>
+              <article class="timeline-entry begin">
+
+                <div class="timeline-entry-inner">
+
+                  <div class="timeline-icon" style="-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg);">
+                    <i class="entypo-flight"></i> +
+                  </div>
+
+                </div>
+
+              </article>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <button (click)="submit()">Submit</button>
+</div>
+
+
+<div *ngIf="showTest" class="inner">
+  <app-test [formInput]="form"></app-test>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

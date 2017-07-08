@@ -1,0 +1,18 @@
+
+
+<!--<input type="file" (change)="fileChange($event)" placeholder="Upload file" accept=".json">-->
+
+<table *ngFor="let itm of InputParameters">
+
+  <tr>
+    <div class="form-group">
+      <label>{{itm.param}}</label>
+      <input class="form-control" type="text" [(ngModel)]="itm.value" />
+    </div>
+  </tr>
+</table>
+
+<div *ngIf="showButtons">
+  <button (click)="call()">Test</button>
+</div>
+
